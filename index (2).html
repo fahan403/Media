@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: 50px auto;
+    }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    .feed {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+    .post {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+    }
+    .post .username {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Social Media Website</h1>
+</header>
+
+<div class="container">
+  <div class="form-container" id="register-form">
+    <h2>Register</h2>
+    <input type="text" id="reg-username" placeholder="Username" required>
+    <input type="text" id="reg-email" placeholder="Email" required>
+    <input type="password" id="reg-password" placeholder="Password" required>
+    <button onclick="register()">Register</button>
+  </div>
+
+  <div class="form-container" id="login-form">
+    <h2>Login</h2>
+    <input type="text" id="login-email" placeholder="Email" required>
+    <input type="password" id="login-password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div class="feed" id="feed" style="display:none;">
+    <h2>Post Feed</h2>
+    <textarea id="post-text" placeholder="What's on your mind?" rows="4"></textarea>
+    <button onclick="postMessage()">Post</button>
+    <div id="posts-container"></div>
+  </div>
+</div>
+
+<script>
+  let users = [];
+  let currentUser = null;
+  let posts = [];
+
+  function register() {
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value.trim();
+
+    if (!username || !email || !password) {
+      alert('All fields are required.');
+      return;
+    }
+
+    if (users.length >= 10) {
+      alert('User limit reached (10).');
+      return;
+    }
+
+    if (users.find(u => u.email === email)) {
+      alert('Email already registered.');
+      return;
+    }
+
+    users.push({ username, email, password });
+    alert('Registration successful!');
+    resetForms();
+  }
+
+  function login() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      currentUser = user;
+      alert(`Welcome, ${user.username}!`);
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('feed').style.display = 'block';
+    } else {
+      alert('Invalid email or password');
+    }
+  }
+
+  function postMessage() {
+    const postText = document.getElementById('post-text').value.trim();
+    if (!postText) {
+      alert('Post cannot be empty.');
+      return;
+    }
+
+    posts.push({ username: currentUser.username, text: postText });
+    document.getElementById('post-text').value = '';
+    displayPosts();
+  }
+
+  function displayPosts() {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = '';
+    posts.slice().reverse().forEach(post => {
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.innerHTML = `<p class="username">${post.username}</p><p>${post.text}</p>`;
+      container.appendChild(div);
+    });
+  }
+
+  setInterval(() => {
+    if (currentUser) displayPosts();
+  }, 2000);
+
+  function resetForms() {
+    ['reg-username','reg-email','reg-password','login-email','login-password'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  }
+</script>
+
+</body>
+</html>
